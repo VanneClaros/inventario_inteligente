@@ -6,17 +6,20 @@
 <tr>
 <th>ID</th>
 <th>Nombre</th>
+<th>Descripción</th>
 <th>Precio</th>
+<th>Stock</th>
 </tr>
 
-@foreach($productos as $producto)  //Itera sobre la colección de productos y muestra cada uno en una fila de la tabla.
+@foreach
 
-<tr>
+($productos as $producto)  
 <td>{{ $producto->id }}</td>
 <td>{{ $producto->nombre }}</td>
+<td>{{ $producto->descripcion }}</td>
 <td>{{ $producto->precio }}</td>
+<td>{{ $producto->stock }}</td>
 </tr>
 
 @endforeach
-
 </table>

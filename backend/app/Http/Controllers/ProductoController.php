@@ -21,7 +21,7 @@ class ProductoController extends Controller
      */
     public function create()
     {
-        return view('Producto.create');//Retorna la vista create.blade.php para mostrar el formulario de creación de un nuevo producto.
+        return view('Producto.create');
     }
 
     /**
@@ -29,16 +29,23 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Producto::create([
+        'nombre' => $request->nombre,
+        'descripcion' => $request->descripcion,
+        'precio' => $request->precio,
+        'stock' => $request->stock
+    ]);
+
+    return redirect('/productos');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
+    //public function show(string)
+    //{
         //
-    }
+   // }
 
     /**
      * Show the form for editing the specified resource.

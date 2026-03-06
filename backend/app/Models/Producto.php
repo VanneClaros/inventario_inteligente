@@ -9,5 +9,12 @@ class Producto extends Model
     public function detalles()
 {
     return $this->hasMany(DetalleVenta::class);
+    
 }
+protected $fillable = [
+    'nombre',
+    'descripcion',
+    'precio',
+    'stock'
+];
 }
