@@ -13,7 +13,7 @@ class ProductoController extends Controller
     public function index()
     {
         $productos = Producto::all(); //Obtiene todos los productos de la base de datos.
-        return view('Producto.index', compact('productos')); //Retorna la vista index.blade.php con la variable productos.
+        return view('Producto.index', compact('productos')); //Retorna la vista index.blade.php con la variable productos. 
     }
 
     /**
@@ -42,17 +42,18 @@ class ProductoController extends Controller
     /**
      * Display the specified resource.
      */
-    //public function show(string)
-    //{
+    public function show(string $id)
+    {
         //
-   // }
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        //
+        $producto = Producto::find($id); //Busca el producto por su ID en la base de datos.
+        return view('Producto.edit', compact('producto')); //Retorna la vista edit.blade.php con la variable producto. 
     }
 
     /**
@@ -60,7 +61,14 @@ class ProductoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $producto = Producto::find($id);
+        $producto->nombre = $request->nombre;
+        $producto->descripcion = $request->descripcion;
+        $producto->precio = $request->precio;
+        $producto->stock = $request->stock;
+        $producto->save();
+
+    return redirect('/productos');
     }
 
     /**
@@ -68,6 +76,9 @@ class ProductoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $producto = Producto::find($id);
+        $producto->delete();
+
+    return redirect('/productos');
     }
 }

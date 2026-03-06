@@ -18,6 +18,7 @@
     <br><br>
     <label>Stock</label>
     <input type="number" name="stock">
+    
     <br><br>
     <button type="submit">Guardar</button>
 </form>
