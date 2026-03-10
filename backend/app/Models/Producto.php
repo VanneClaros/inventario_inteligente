@@ -11,10 +11,11 @@ class Producto extends Model
     return $this->hasMany(DetalleVenta::class);
     
 }
-protected $fillable = [
-    'nombre',
-    'descripcion',
-    'precio',
-    'stock'
-];
+    protected $fillable = [
+        'nombre',
+        'descripcion',
+        'precio',
+        'stock',
+        'categorias_id'
+    ];  
 }

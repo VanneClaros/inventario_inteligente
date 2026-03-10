@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Producto; //Importa el modelo Producto para interactuar con la base de datos.
+use App\Models\Producto; 
+use App\Models\Categoria;//Importa el modelo Producto para interactuar con la base de datos.
 
 class ProductoController extends Controller
 {
@@ -21,22 +22,25 @@ class ProductoController extends Controller
      */
     public function create()
     {
-        return view('Producto.create');
+        $categorias = Categoria::all();
+        return view('Producto.create', compact('categorias')); //Retorna la vista create.blade.php con las variables productos y categorias.
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+{
         Producto::create([
-        'nombre' => $request->nombre,
-        'descripcion' => $request->descripcion,
-        'precio' => $request->precio,
-        'stock' => $request->stock
-    ]);
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'precio' => $request->precio,
+            'stock' => $request->stock,
+            'categorias_id' => $request->categorias_id
+        ]);
 
     return redirect('/productos');
+
     }
 
     /**

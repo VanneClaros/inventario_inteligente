@@ -15,7 +15,6 @@
 
 <br><br>
 
-
 <label>Precio</label>
 <input type="number" name="precio" value="{{ $producto->precio }}">
 
