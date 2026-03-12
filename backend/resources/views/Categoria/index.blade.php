@@ -20,16 +20,13 @@
 
 <td>
 
-<a href="/categorias/{{ $categoria->id }}/edit">Editar</a>
-
-<form action="/categorias/{{ $categoria->id }}" method="POST">
-@csrf
-@method('DELETE')
-<button type="submit">Eliminar</button>
-</form>
-
+<a href="/categorias/{{ $categoria->id }}/edit"><button type="submit">Editar</button></a>
+<form action="/categorias/{{ $categoria->id }}" method="POST" style="display:inline">
+            @csrf
+            @method('DELETE')
+            <button type="submit">Eliminar</button>
+        </form>
 </td>
-
 </tr>
 
 @endforeach

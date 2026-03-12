@@ -12,8 +12,8 @@
 <input type="text" name="descripcion">
 
 <br><br>
-<label>Precio:</label>
-<input type="text" name="precio">
+    <label>Precio:</label>
+    <input type="text" name="precio">
 
 <br><br>
 

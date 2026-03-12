@@ -21,7 +21,12 @@
 <td>{{ $cliente->email }}</td>
 
 <td>
-<a href="/clientes/{{ $cliente->id }}/edit">Editar</a>
+    <a href="/clientes/{{ $cliente->id }}/edit"><button type="submit">Editar</button></a>
+    <form action="/clientes/{{ $cliente->id }}" method="POST" style="display:inline">
+            @csrf
+            @method('DELETE')
+            <button type="submit">Eliminar</button>
+        </form>
 </td>
 
 </tr>

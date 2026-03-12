@@ -9,15 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
-{
-    Schema::create('ventas', function (Blueprint $table) {
+    public function up(): void
+    {
+        Schema::create('ventas', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('cliente_id')->constrained('clientes');
-        $table->decimal('total', 10, 2);
+        $table->foreignId('cliente_id')->constrained('clientes')->onDelete('cascade');
+        $table->decimal('total',10,2)->default(0);
         $table->timestamps();
-    });
-}
+        });
+    }
 
     /**
      * Reverse the migrations.
