@@ -8,7 +8,6 @@ return new class extends Migration
 {
 public function up()
 {
-
     Schema::create('detalle_ventas', function (Blueprint $table) {
     $table->id();
     $table->foreignId('venta_id')->constrained('ventas')->onDelete('cascade');
@@ -16,9 +15,7 @@ public function up()
     $table->integer('cantidad');
     $table->decimal('precio',10,2);
     $table->timestamps();
-
     });
-
 }
 
 public function down()

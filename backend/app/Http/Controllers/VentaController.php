@@ -1,10 +1,9 @@
 <?php
-
+namespace App\Http\Controllers;
 use App\Models\Venta;
 use App\Models\Cliente;
 use App\Models\DetalleVenta;
 use App\Models\Producto;
-use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
