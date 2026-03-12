@@ -10,16 +10,17 @@ use Illuminate\Database\Eloquent\Model;
     protected $fillable = [
         'cliente_id',
         'total'
+
     ];
 
     public function cliente()
     {
-    return $this->belongsTo(Cliente::class);
+    return $this->belongsTo(Cliente::class);      
     }
 
     public function detalles()
-    {
-    return $this->hasMany(DetalleVenta::class);
+    { 
+        return $this->hasMany(DetalleVenta::class);
     }
 
     }

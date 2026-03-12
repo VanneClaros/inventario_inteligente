@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers;
+
 use App\Models\Venta;
 use App\Models\Cliente;
 use App\Models\DetalleVenta;
 use App\Models\Producto;
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
@@ -32,26 +34,28 @@ return view('Venta.create', compact('clientes','productos'));
 public function store(Request $request)
 {
     $venta = Venta::create([
-    'cliente_id'=>$request->cliente_id,
-    'total'=>0
-]);
+        'cliente_id'=>$request->cliente_id,
+        'total'=>0
+    ]);
 
-$producto = Producto::find($request->producto_id);
+    $producto = Producto::find($request->producto_id);
 
-$total = $producto->precio * $request->cantidad;
+    $total = $producto->precio * $request->cantidad;
 
-DetalleVenta::create([
-    'venta_id'=>$venta->id,
-    'producto_id'=>$producto->id,
-    'cantidad'=>$request->cantidad,
-    'precio'=>$producto->precio
-]);
+    DetalleVenta::create([
+        'venta_id'=>$venta->id,
+        'producto_id'=>$producto->id,
+        'cantidad'=>$request->cantidad,
+        'precio'=>$producto->precio
+    ]);
 
-$venta->total = $total;
-$venta->save();
+    // DESCONTAR STOCK
+    $producto->decrement('stock', $request->cantidad);
 
-return redirect('/ventas');
+    $venta->total = $total;
+    $venta->save();
 
+    return redirect('/ventas');
 }
 
 public function show($id)
