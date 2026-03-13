@@ -1,25 +1,26 @@
-<h1>Detalle Venta</h1>
+<h2>Detalle de Venta</h2>
 
-Cliente: {{ $venta->cliente->nombre }}
+<p><strong>Cliente:</strong> {{ $venta->cliente->nombre }}</p>
+<p><strong>Fecha:</strong> {{ $venta->created_at }}</p>
+<p><strong>Total:</strong> {{ $venta->total }}</p>
 
 <table border="1">
-
-<tr>
-<th>Producto</th>
-<th>Cantidad</th>
-<th>Precio</th>
-</tr>
-
-@foreach($venta->detalles as $detalle)
-
-<tr>
-<td>{{ $detalle->producto->nombre }}</td>
-<td>{{ $detalle->cantidad }}</td>
-<td>{{ $detalle->precio }}</td>
-</tr>
-
-@endforeach
-
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($venta->detalles as $detalle)
+        <tr>
+            <td>{{ $detalle->producto->nombre }}</td>
+            <td>{{ $detalle->cantidad }}</td>
+            <td>{{ $detalle->precio }}</td>
+            <td>{{ $detalle->cantidad * $detalle->precio }}</td>
+        </tr>
+        @endforeach
+    </tbody>
 </table>
-
-Total: {{ $venta->total }}

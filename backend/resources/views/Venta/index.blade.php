@@ -17,18 +17,14 @@
 <td>{{ $venta->cliente->nombre }}</td>
 <td>{{ $venta->total }}</td>
 <td>
-
-    <a href="/ventas/{{ $venta->id }}">Ver</a>
-
-    <a href="/ventas/{{ $venta->id }}/edit">Editar</a>
-
-    <form action="/ventas/{{ $venta->id }}" method="POST">
-
-        @csrf
-    @method('DELETE')
-    <button type="submit">Eliminar</button>
-    </form>
-</td>
+    <a href="{{ route('ventas.show', $venta->id) }}">Ver detalle</a>
+    <a href="{{ route('ventas.edit', $venta->id) }}">Editar</a>
+        <form action="{{ route('ventas.destroy', $venta->id) }}" method="POST" style="display:inline">
+            @csrf
+            @method('DELETE')
+            <button onclick="return confirm('¿Eliminar esta venta?')" type="submit">Eliminar</button>
+        </form>
+    </td>
 </tr>
 @endforeach
 
