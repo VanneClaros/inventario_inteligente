@@ -28,9 +28,24 @@ class VentaController extends Controller
     return view('Venta.create', compact('clientes','productos'));
 
     }
-
-    public function store(Request $request)
+   public function store(Request $request)
 {
+
+    // PRIMERO VALIDAR STOCK
+    foreach ($request->productos as $index => $producto_id) {
+
+        $producto = Producto::find($producto_id);
+        $cantidad = $request->cantidades[$index];
+
+        if($producto->stock < $cantidad){
+
+            return redirect('/ventas/create')
+            ->with('error','No hay suficiente stock para '.$producto->nombre);
+
+        }
+    }
+
+    // CREAR VENTA
     $venta = Venta::create([
         'cliente_id' => $request->cliente_id,
         'total' => 0
@@ -39,6 +54,7 @@ class VentaController extends Controller
     $total = 0;
 
     foreach ($request->productos as $index => $producto_id) {
+
         $producto = Producto::find($producto_id);
         $cantidad = $request->cantidades[$index];
         $precio = $request->precios[$index];
@@ -51,15 +67,18 @@ class VentaController extends Controller
             'precio' => $precio
         ]);
 
-        // Descontar stock
-        $producto->decrement('stock', $cantidad);
+        // DESCONTAR STOCK
+        $producto->stock = $producto->stock - $cantidad;
+        $producto->save();
+
         $total += $subtotal;
     }
 
     $venta->total = $total;
     $venta->save();
 
-    return redirect()->route('ventas.index');
+    return redirect('/ventas');
+
 }
 
     public function show($id)
@@ -92,6 +111,7 @@ class VentaController extends Controller
         foreach($detalles as $detalle){
         $producto = Producto::find($detalle->producto_id);
         $producto->stock = $producto->stock + $detalle->cantidad;
+        $producto->increment('stock', $detalle->cantidad);
         $producto->save();
     }
 
@@ -100,4 +120,18 @@ class VentaController extends Controller
     return redirect('/ventas');
     }
 
-}
+    public function dashboard(){
+
+        $ventas_hoy = Venta::whereDate('created_at', today())->sum('total');
+        $ventas_mes = Venta::whereMonth('created_at', date('m'))->sum('total');
+        $total_productos = Producto::count();
+        $total_clientes = Cliente::count();
+
+        return view('dashboard', compact(
+        'ventas_hoy',
+        'ventas_mes',
+        'total_productos',
+        'total_clientes'
+        ));
+    }
+}   

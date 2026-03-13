@@ -1,4 +1,9 @@
 <h2>Nueva Venta</h2>
+    @if(session('error'))
+    <div style="color:red;">
+    {{ session('error') }}
+    </div>
+    @endif
 
 <form action="/ventas" method="POST">
 @csrf
@@ -67,11 +72,8 @@ Agregar al carrito
 </tbody>
 
 </table>
-
 <br>
-
 <h3>Total: <span id="total">0</span></h3>
-
 <br>
 
 <button type="submit">
