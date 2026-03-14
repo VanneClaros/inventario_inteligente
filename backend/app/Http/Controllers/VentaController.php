@@ -126,7 +126,8 @@ class VentaController extends Controller
         $ventas_mes = Venta::whereMonth('created_at', date('m'))->sum('total');
         $total_productos = Producto::count();
         $total_clientes = Cliente::count();
-
+        $total_ventas = Venta::count();
+        
         return view('dashboard', compact(
         'ventas_hoy',
         'ventas_mes',

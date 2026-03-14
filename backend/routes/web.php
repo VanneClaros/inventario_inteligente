@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\DashboardController;
 
 Route::resource('productos', ProductoController::class); //Crea rutas para CRUD de productos.
 Route::resource('categorias', CategoriaController::class);
@@ -14,3 +15,4 @@ Route::get('/ventas/{id}', [VentaController::class, 'show'])->name('ventas.show'
 Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index'); //Ruta para listar todas las ventas.
 Route::delete('/ventas/{id}', [VentaController::class, 'destroy']);
 Route::get('/dashboard', [VentaController::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index']);
