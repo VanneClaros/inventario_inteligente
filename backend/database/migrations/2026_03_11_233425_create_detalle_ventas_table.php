@@ -14,6 +14,7 @@ public function up()
     $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
     $table->integer('cantidad');
     $table->decimal('precio',10,2);
+    $table->decimal('subtotal',10,2);
     $table->timestamps();
     });
 }

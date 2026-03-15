@@ -10,6 +10,7 @@
 <th>Descripción</th>
 <th>Precio</th>
 <th>Stock</th>
+<th>Stock Mínimo</th>
 <th>Acciones</th>
 </tr>
 
@@ -19,6 +20,7 @@
 <td>{{ $producto->descripcion }}</td>
 <td>{{ $producto->precio }}</td>
 <td>{{ $producto->stock }}</td>
+<td>{{ $producto->stock_minimo }}</td>
 
 <td>
         <a href="/productos/{{ $producto->id }}/edit"><button type="submit">Editar</button></a>

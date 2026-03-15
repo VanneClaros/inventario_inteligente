@@ -12,37 +12,43 @@ class DashboardController extends Controller
 {
     public function index()
     {
-
+        // Totales generales
         $totalProductos = Producto::count();
         $totalClientes = Cliente::count();
         $totalVentas = Venta::count();
 
-        // ventas por dia
+        // Ventas por día (gráfico de línea)
         $ventasPorDia = Venta::select(
             DB::raw('DATE(created_at) as fecha'),
             DB::raw('SUM(total) as total')
         )
-        ->groupBy('fecha')
-        ->orderBy('fecha')
+        ->groupBy(DB::raw('DATE(created_at)'))
+        ->orderBy('fecha', 'asc')
         ->get();
 
-        // producto mas vendido
-        $productoTop = DB::table('detalle_ventas')
-        ->join('productos','detalle_ventas.producto_id','=','productos.id')
-        ->select('productos.nombre', DB::raw('SUM(detalle_ventas.cantidad) as total'))
-        ->groupBy('productos.nombre')
-        ->orderByDesc('total')
-        ->first();
+        // Productos más vendidos (gráfico de pastel)
+        $productosVendidos = DB::table('detalle_ventas')
+            ->join('productos','detalle_ventas.producto_id','=','productos.id')
+            ->select('productos.nombre', DB::raw('SUM(detalle_ventas.cantidad) as total'))
+            ->groupBy('productos.nombre')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
 
-        // cliente que mas compra
-        $clienteTop = DB::table('ventas')
-        ->join('clientes','ventas.cliente_id','=','clientes.id')
-        ->select('clientes.nombre', DB::raw('COUNT(ventas.id) as total'))
-        ->groupBy('clientes.nombre')
-        ->orderByDesc('total')
-        ->first();
+        $productoTop = $productosVendidos->first();
 
-        // productos con poco stock
+        // Clientes con más compras (gráfico de barras)
+        $clientesTop = DB::table('ventas')
+            ->join('clientes','ventas.cliente_id','=','clientes.id')
+            ->select('clientes.nombre', DB::raw('COUNT(ventas.id) as total'))
+            ->groupBy('clientes.nombre')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
+
+        $clienteTop = $clientesTop->first();
+
+        // Productos con poco stock
         $stockBajo = Producto::where('stock','<',5)->get();
 
         return view('dashboard', compact(
@@ -50,7 +56,9 @@ class DashboardController extends Controller
             'totalClientes',
             'totalVentas',
             'ventasPorDia',
+            'productosVendidos',
             'productoTop',
+            'clientesTop',
             'clienteTop',
             'stockBajo'
         ));

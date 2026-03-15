@@ -15,9 +15,10 @@ return new class extends Migration
         $table->id();
         $table->string('nombre');
         $table->text('descripcion')->nullable();
-        $table->decimal('precio',8,2);
-        $table->integer('stock');
-        $table->foreignId('categorias_id')->constrained('categorias');
+        $table->decimal('precio',10,2);
+        $table->integer('stock')->default(0);
+        $table->integer('stock_minimo')->default(0);
+        $table->foreignId('categoria_id')->constrained('categorias')->onDelete('cascade');
         $table->timestamps();
         });
     }

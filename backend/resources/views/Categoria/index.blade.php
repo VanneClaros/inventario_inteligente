@@ -7,7 +7,6 @@
 <tr>
 <th>ID</th>
 <th>Nombre</th>
-<th>Descripción</th>
 <th>Acciones</th>
 </tr>
 
@@ -16,7 +15,6 @@
 <tr>
 <td>{{ $categoria->id }}</td>
 <td>{{ $categoria->nombre }}</td>
-<td>{{ $categoria->descripcion }}</td>
 
 <td>
 

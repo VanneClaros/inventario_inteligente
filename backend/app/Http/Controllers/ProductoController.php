@@ -30,15 +30,15 @@ class ProductoController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-        Producto::create([
+    {
+            Producto::create([
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
             'precio' => $request->precio,
             'stock' => $request->stock,
-            'categorias_id' => $request->categorias_id
+            'stock_minimo' => $request->stock_minimo,
+            'categoria_id' => $request->categoria_id
         ]);
-
     return redirect('/productos');
 
     }
@@ -65,11 +65,12 @@ class ProductoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $producto = Producto::find($id);
+        $producto = Producto::find($id); //Busca el producto por su ID en la base de datos. 
         $producto->nombre = $request->nombre;
         $producto->descripcion = $request->descripcion;
         $producto->precio = $request->precio;
         $producto->stock = $request->stock;
+        $producto->stock_minimo = $request->stock_minimo;
         $producto->save();
 
     return redirect('/productos');

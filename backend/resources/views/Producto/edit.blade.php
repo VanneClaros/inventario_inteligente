@@ -25,6 +25,10 @@
 
 <br><br>
 
+<label>Stock Mínimo</label>
+<input type="number" name="stock_minimo" value="{{ $producto->stock_minimo }}">
+
+
 <button type="submit">Actualizar</button>
 
 </form>

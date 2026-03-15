@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 
     protected $fillable = [
         'cliente_id',
-        'total'
-
+        'total',
+        'fecha'
     ];
 
     public function cliente()

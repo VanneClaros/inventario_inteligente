@@ -11,20 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ventas', function (Blueprint $table) {
+        Schema::create('lotes', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('cliente_id')->constrained('clientes')->onDelete('cascade');
-        $table->decimal('total',10,2)->default(0);
-        $table->date('fecha');
+        $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
+        $table->integer('cantidad');
+        $table->date('fecha_ingreso');
+        $table->date('fecha_vencimiento');
         $table->timestamps();
         });
     }
 
-    /** 
+    /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('ventas');
+        Schema::dropIfExists('lotes');
     }
 };
