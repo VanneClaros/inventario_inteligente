@@ -7,6 +7,7 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoteController;
+use App\Http\Controllers\ReporteController;
 
 Route::resource('productos', ProductoController::class); //Crea rutas para CRUD de productos.
 Route::resource('categorias', CategoriaController::class);
@@ -18,3 +19,5 @@ Route::delete('/ventas/{id}', [VentaController::class, 'destroy']);
 Route::get('/dashboard', [VentaController::class, 'dashboard'])->name('dashboard');
 Route::get('/dashboard', [DashboardController::class, 'index']);
 Route::resource('lotes',LoteController::class);
+Route::get('/reportes/ventas', [ReporteController::class, 'ventas']);
+Route::get('/reportes/ventas/pdf', [ReporteController::class, 'exportarPDF'])->name('reportes.pdf');

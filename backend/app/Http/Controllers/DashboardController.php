@@ -7,26 +7,43 @@ use App\Models\Producto;
 use App\Models\Cliente;
 use App\Models\Venta;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Totales generales
+        // 📊 KPIs
         $totalProductos = Producto::count();
         $totalClientes = Cliente::count();
         $totalVentas = Venta::count();
+        $ventasHoy = Venta::whereDate('created_at', now())->sum('total');
+        $promedioVenta = Venta::avg('total');
 
-        // Ventas por día (gráfico de línea)
-        $ventasPorDia = Venta::select(
+        // 📈 FILTRO
+        $filtro = request('filtro');
+        $query = Venta::query();
+
+        if($filtro == 'dia'){
+            $query->whereDate('created_at', now());
+        } elseif($filtro == 'semana'){
+            $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        } elseif($filtro == 'mes'){
+            $query->whereMonth('created_at', now()->month);
+        } elseif($filtro == 'anio'){
+            $query->whereYear('created_at', now()->year);
+        }
+
+        // 📊 VENTAS POR DÍA
+        $ventasPorDia = $query->select(
             DB::raw('DATE(created_at) as fecha'),
             DB::raw('SUM(total) as total')
         )
         ->groupBy(DB::raw('DATE(created_at)'))
-        ->orderBy('fecha', 'asc')
+        ->orderBy(DB::raw('DATE(created_at)'))
         ->get();
 
-        // Productos más vendidos (gráfico de pastel)
+        // 🥇 PRODUCTOS
         $productosVendidos = DB::table('detalle_ventas')
             ->join('productos','detalle_ventas.producto_id','=','productos.id')
             ->select('productos.nombre', DB::raw('SUM(detalle_ventas.cantidad) as total'))
@@ -37,7 +54,7 @@ class DashboardController extends Controller
 
         $productoTop = $productosVendidos->first();
 
-        // Clientes con más compras (gráfico de barras)
+        // 👑 CLIENTES
         $clientesTop = DB::table('ventas')
             ->join('clientes','ventas.cliente_id','=','clientes.id')
             ->select('clientes.nombre', DB::raw('COUNT(ventas.id) as total'))
@@ -48,13 +65,15 @@ class DashboardController extends Controller
 
         $clienteTop = $clientesTop->first();
 
-        // Productos con poco stock
+        // ⚠️ STOCK BAJO
         $stockBajo = Producto::where('stock','<',5)->get();
 
         return view('dashboard', compact(
             'totalProductos',
             'totalClientes',
             'totalVentas',
+            'ventasHoy',
+            'promedioVenta',
             'ventasPorDia',
             'productosVendidos',
             'productoTop',

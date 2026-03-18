@@ -139,7 +139,6 @@ class VentaController extends Controller
         return view('Venta.edit', compact('venta','clientes'));
     }
 
-
     public function update(Request $request, $id)
     {
         $venta = Venta::findOrFail($id);
