@@ -1,29 +1,24 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\Producto;
 use App\Models\Cliente;
 use App\Models\Venta;
+use App\Models\Lote;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
-
 class DashboardController extends Controller
 {
     public function index()
     {
-        // 📊 KPIs
         $totalProductos = Producto::count();
         $totalClientes = Cliente::count();
         $totalVentas = Venta::count();
         $ventasHoy = Venta::whereDate('created_at', now())->sum('total');
         $promedioVenta = Venta::avg('total');
 
-        // 📈 FILTRO
         $filtro = request('filtro');
         $query = Venta::query();
-
         if($filtro == 'dia'){
             $query->whereDate('created_at', now());
         } elseif($filtro == 'semana'){
@@ -34,7 +29,6 @@ class DashboardController extends Controller
             $query->whereYear('created_at', now()->year);
         }
 
-        // 📊 VENTAS POR DÍA
         $ventasPorDia = $query->select(
             DB::raw('DATE(created_at) as fecha'),
             DB::raw('SUM(total) as total')
@@ -43,7 +37,6 @@ class DashboardController extends Controller
         ->orderBy(DB::raw('DATE(created_at)'))
         ->get();
 
-        // 🥇 PRODUCTOS
         $productosVendidos = DB::table('detalle_ventas')
             ->join('productos','detalle_ventas.producto_id','=','productos.id')
             ->select('productos.nombre', DB::raw('SUM(detalle_ventas.cantidad) as total'))
@@ -51,10 +44,8 @@ class DashboardController extends Controller
             ->orderByDesc('total')
             ->take(5)
             ->get();
-
         $productoTop = $productosVendidos->first();
 
-        // 👑 CLIENTES
         $clientesTop = DB::table('ventas')
             ->join('clientes','ventas.cliente_id','=','clientes.id')
             ->select('clientes.nombre', DB::raw('COUNT(ventas.id) as total'))
@@ -62,24 +53,29 @@ class DashboardController extends Controller
             ->orderByDesc('total')
             ->take(5)
             ->get();
-
         $clienteTop = $clientesTop->first();
 
-        // ⚠️ STOCK BAJO
-        $stockBajo = Producto::where('stock','<',5)->get();
+        $stockBajo = Producto::where('stock','<', 5)->get();
+
+        // 🚫 LOTES VENCIDOS
+        $lotesVencidos = Lote::with('producto')
+            ->where('fecha_vencimiento', '<', now())
+            ->where('cantidad', '>', 0)
+            ->orderBy('fecha_vencimiento', 'asc')
+            ->get();
+
+        // ⏳ LOTES PRÓXIMOS A VENCER (30 días)
+        $lotesPorVencer = Lote::with('producto')
+            ->whereBetween('fecha_vencimiento', [now(), now()->addDays(30)])
+            ->where('cantidad', '>', 0)
+            ->orderBy('fecha_vencimiento', 'asc')
+            ->get();
 
         return view('dashboard', compact(
-            'totalProductos',
-            'totalClientes',
-            'totalVentas',
-            'ventasHoy',
-            'promedioVenta',
-            'ventasPorDia',
-            'productosVendidos',
-            'productoTop',
-            'clientesTop',
-            'clienteTop',
-            'stockBajo'
+            'totalProductos', 'totalClientes', 'totalVentas',
+            'ventasHoy', 'promedioVenta', 'ventasPorDia',
+            'productosVendidos', 'productoTop', 'clientesTop',
+            'clienteTop', 'stockBajo', 'lotesVencidos', 'lotesPorVencer'
         ));
     }
 }

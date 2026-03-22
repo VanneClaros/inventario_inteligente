@@ -1,23 +1,39 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\VentaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\VentaController;
 use App\Http\Controllers\LoteController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\ProfileController;
 
-Route::resource('productos', ProductoController::class); //Crea rutas para CRUD de productos.
-Route::resource('categorias', CategoriaController::class);
-Route::resource('clientes', ClienteController::class);
-Route::resource('ventas', VentaController::class);
-Route::get('/ventas/{id}', [VentaController::class, 'show'])->name('ventas.show'); //Ruta para mostrar detalles de una venta específica.
-Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index'); //Ruta para listar todas las ventas.
-Route::delete('/ventas/{id}', [VentaController::class, 'destroy']);
-Route::get('/dashboard', [VentaController::class, 'dashboard'])->name('dashboard');
-Route::get('/dashboard', [DashboardController::class, 'index']);
-Route::resource('lotes',LoteController::class);
-Route::get('/reportes/ventas', [ReporteController::class, 'ventas']);
-Route::get('/reportes/ventas/pdf', [ReporteController::class, 'exportarPDF'])->name('reportes.pdf');
+/* RUTA PRINCIPAL → redirige al login */
+Route::get('/', fn() => redirect()->route('login'));
+
+/* RUTAS PROTEGIDAS POR AUTENTICACIÓN */
+Route::middleware(['auth'])->group(function () {
+
+    // ADMIN y VENDEDOR → dashboard, ventas, clientes
+    Route::middleware(['rol:admin,vendedor'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('ventas', VentaController::class);
+        Route::resource('clientes', ClienteController::class);
+    });
+
+    // SOLO ADMIN → productos, lotes, reportes
+    Route::middleware(['rol:admin'])->group(function () {
+        Route::resource('lotes', LoteController::class);
+        Route::resource('productos', ProductoController::class);
+        Route::get('/reportes/ventas', [ReporteController::class, 'ventas'])->name('reportes.ventas');
+        Route::get('/reportes/pdf', [ReporteController::class, 'exportarPDF'])->name('reportes.pdf');
+    });
+
+    // PERFIL (todos los autenticados)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+/* AUTH (BREEZE) 🔥 NO BORRAR */
+require __DIR__.'/auth.php';
