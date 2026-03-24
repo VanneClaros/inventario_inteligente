@@ -41,6 +41,7 @@
 .form-select option { background: #242938; color: #e8eaf0; }
 .is-invalid { border-color: #ef4444 !important; }
 .invalid-feedback { color: #f87171; font-size: 0.75rem; }
+.hint { font-size: 0.72rem; color: #5a6280; margin-top: 0.3rem; }
 .btn-guardar {
     background: linear-gradient(135deg, #c9a84c, #e8c96a);
     color: #111; font-weight: 700; border: none; border-radius: 10px;
@@ -71,6 +72,7 @@
             <div class="section-divider">🗂️ Información del lote</div>
 
             <div class="row g-3">
+
                 <div class="col-12">
                     <label class="form-label">Producto</label>
                     <select name="producto_id" class="form-select @error('producto_id') is-invalid @enderror">
@@ -84,11 +86,20 @@
                     @error('producto_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
+                                {{-- Número de lote se genera automáticamente --}}
+                <div class="col-12">
+                    <label class="form-label">Número de Lote</label>
+                    <input type="text" class="form-control"
+                        value="LOT-{{ date('Y') }}-XXX" disabled>
+                    <div class="hint">Se generará automáticamente al guardar.</div>
+                </div>
+
                 <div class="col-12">
                     <label class="form-label">Cantidad</label>
                     <input type="number" name="cantidad"
                         class="form-control @error('cantidad') is-invalid @enderror"
                         value="{{ old('cantidad') }}" placeholder="0" min="1">
+                    <div class="hint">Se registrará también como cantidad inicial del lote.</div>
                     @error('cantidad')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
@@ -107,6 +118,7 @@
                         value="{{ old('fecha_vencimiento') }}">
                     @error('fecha_vencimiento')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
+
             </div>
 
             <div class="d-flex gap-3 mt-4">

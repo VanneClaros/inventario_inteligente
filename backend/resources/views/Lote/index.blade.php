@@ -19,9 +19,7 @@
     text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
 }
 .btn-nuevo:hover { opacity: 0.9; transform: translateY(-1px); color: #111; }
-
 .alert-ok { background: #1a2e25; border: 1px solid #166534; color: #86efac; border-radius: 12px; }
-
 .table-card {
     background: #242938; border: 1px solid #2e3550;
     border-radius: 16px; overflow: hidden;
@@ -41,33 +39,31 @@
 }
 .lote-table tbody tr:last-child td { border-bottom: none; }
 .lote-table tbody tr:hover td { background: #2e3550; }
-
 .td-id { font-family: 'DM Mono', monospace; color: #5a6280; font-size: 0.8rem; }
 .td-nombre { font-weight: 600; color: #f0e6c8; }
+.td-lote { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: #c9a84c; }
 .td-cantidad { font-family: 'DM Mono', monospace; color: #a0a8c0; font-weight: 600; }
 .td-fecha { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: #8892a4; }
-
-/* BADGES ESTADO */
 .badge-vigente {
     display: inline-flex; align-items: center; gap: 0.3rem;
     background: #1a2e25; border: 1px solid #166534; color: #86efac;
-    border-radius: 999px; padding: 0.25rem 0.75rem;
-    font-size: 0.72rem; font-weight: 600;
+    border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 600;
 }
 .badge-vencido {
     display: inline-flex; align-items: center; gap: 0.3rem;
     background: #2a1f1f; border: 1px solid #7f1d1d; color: #fca5a5;
-    border-radius: 999px; padding: 0.25rem 0.75rem;
-    font-size: 0.72rem; font-weight: 600;
+    border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 600;
 }
 .badge-por-vencer {
     display: inline-flex; align-items: center; gap: 0.3rem;
     background: #2a1f09; border: 1px solid #92400e; color: #fcd34d;
-    border-radius: 999px; padding: 0.25rem 0.75rem;
-    font-size: 0.72rem; font-weight: 600;
+    border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 600;
 }
-
-/* BOTONES ACCION */
+.badge-agotado {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: #1e1e2e; border: 1px solid #4b5280; color: #8892a4;
+    border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 600;
+}
 .btn-editar {
     background: #2e3550; border: 1px solid #3d4666; color: #a0a8c0;
     font-size: 0.78rem; border-radius: 8px; padding: 0.35rem 0.85rem;
@@ -106,7 +102,9 @@
                 <tr>
                     <th>ID</th>
                     <th>Producto</th>
-                    <th>Cantidad</th>
+                    <th>N° Lote</th>
+                    <th>Cant. Inicial</th>
+                    <th>Cant. Actual</th>
                     <th>Fecha Ingreso</th>
                     <th>Fecha Vencimiento</th>
                     <th>Estado</th>
@@ -116,17 +114,34 @@
             <tbody>
                 @forelse($lotes as $lote)
                 @php
-                    $hoy = date('Y-m-d');
+                    $hoy     = date('Y-m-d');
                     $vence30 = date('Y-m-d', strtotime('+30 days'));
                 @endphp
                 <tr>
                     <td><span class="td-id">#{{ $lote->id }}</span></td>
+
                     <td><span class="td-nombre">{{ $lote->producto->nombre }}</span></td>
-                    <td><span class="td-cantidad">{{ $lote->cantidad }} uds</span></td>
-                    <td><span class="td-fecha">{{ \Carbon\Carbon::parse($lote->fecha_ingreso)->format('d/m/Y') }}</span></td>
-                    <td><span class="td-fecha">{{ \Carbon\Carbon::parse($lote->fecha_vencimiento)->format('d/m/Y') }}</span></td>
+
                     <td>
-                        @if($lote->fecha_vencimiento < $hoy)
+                        @if($lote->numero_lote)
+                            <span class="td-lote">{{ $lote->numero_lote }}</span>
+                        @else
+                            <span style="color:#4b5563; font-size:0.78rem">—</span>
+                        @endif
+                    </td>
+
+                    <td><span class="td-cantidad">{{ $lote->cantidad_inicial ?? '—' }} uds</span></td>
+
+                    <td><span class="td-cantidad">{{ $lote->cantidad }} uds</span></td>
+
+                    <td><span class="td-fecha">{{ \Carbon\Carbon::parse($lote->fecha_ingreso)->format('d/m/Y') }}</span></td>
+
+                    <td><span class="td-fecha">{{ \Carbon\Carbon::parse($lote->fecha_vencimiento)->format('d/m/Y') }}</span></td>
+
+                    <td>
+                        @if($lote->cantidad <= 0)
+                            <span class="badge-agotado"><i class="bi bi-dash-circle"></i> Agotado</span>
+                        @elseif($lote->fecha_vencimiento < $hoy)
                             <span class="badge-vencido"><i class="bi bi-x-circle"></i> Vencido</span>
                         @elseif($lote->fecha_vencimiento <= $vence30)
                             <span class="badge-por-vencer"><i class="bi bi-exclamation-triangle"></i> Por vencer</span>
@@ -134,13 +149,14 @@
                             <span class="badge-vigente"><i class="bi bi-check-circle"></i> Vigente</span>
                         @endif
                     </td>
+
                     <td>
                         <div class="d-flex gap-2">
                             <a href="{{ route('lotes.edit', $lote->id) }}" class="btn-editar">
                                 <i class="bi bi-pencil"></i> Editar
                             </a>
-                            <form action="{{ route('lotes.destroy', $lote->id) }}" method="POST" style="display:inline"
-                                onsubmit="return confirm('¿Eliminar este lote?')">
+                            <form action="{{ route('lotes.destroy', $lote->id) }}" method="POST"
+                                style="display:inline" onsubmit="return confirm('¿Eliminar este lote?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-eliminar">
@@ -152,7 +168,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7">
+                    <td colspan="9">
                         <div class="empty-state">
                             <i class="bi bi-box-seam fs-2 d-block mb-2" style="color:#c9a84c"></i>
                             No hay lotes registrados
